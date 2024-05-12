@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/resources/images/logo.ico" type="image/x-icon">
+    <title>Аккаунт</title>
+    <link rel="stylesheet" href="/resources/styles/main.css">
+    <link rel="stylesheet" href="/resources/styles/account.css">
+</head>
+<body>
+    <div th:insert="~{header :: header}"></div>
+    <main class="container">
+        <div class="top">
+            <div><h1 style="margin: 0;">Ваш аккаунт</h1></div>
+            <div><a href="/logout" class="btn">Выход</a></div>
+        </div>     
+        <div class="profile-info">
+            <h2>Личные данные</h2>
+            <p><strong>Имя:</strong> <span th:text="${user.name}"></span></p>
+        </div>
+        <div class="order-history">
+            <h2>Ваши заявки</h2>
+            <ul class="order-list">
+                <li class="order-item" th:each="bid, bidIndex : ${user.bids}" th:id="'order-' + ${bidIndex.index}">
+                    <span class="order-number order-header" th:text="'Заявка #' + ${bid.getOrderNum()}"
+                          th:attr="data-order-index=${bidIndex.index}" th:onclick="toggleBid(this)"></span>
+                    <ul class="item-list" th:id="'products-' + ${bidIndex.index}" style="display:none;">
+                        <li class="item-item">
+                            <p>Название товара:&nbsp;</p>
+                            <span th:text="${bid.item.title}"></span>
+                        </li>
+                        <li class="item-item" style="flex-direction: column;">
+                            <p>Описание товара:</p>
+                            <textarea rows="5" th:text="${bid.item.description}"></textarea>
+                        </li>
+                        <li class="item-item">
+                            <p>Ваша цена:&nbsp;</p>
+                            <span th:text="${bid.item.cost}"></span>
+                        </li>
+                        <li class="item-item">
+                            <p>Дата для осмотра товара:&nbsp;</p>
+                            <span th:text="${bid.reviewDate}"></span>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="order-item" th:if="${#lists.isEmpty(user.bids)}">
+                    <p>Заявки отсутствуют</p>
+                </li>
+            </ul>
+        </div>
+        <script th:inline="javascript">
+            function toggleBid(element) {
+                var orderIndex = element.getAttribute("data-order-index");
+                var productsElement = document.getElementById('products-' + orderIndex);
+                if (productsElement.style.display === "none") {
+                    productsElement.style.display = "block";
+                } else {
+                    productsElement.style.display = "none";
+                }
+            }
+        </script>
+    </main>
+    <div th:insert="~{footer :: footer}"></div>
+</body>
+</html>
